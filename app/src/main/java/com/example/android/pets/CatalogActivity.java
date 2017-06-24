@@ -18,7 +18,7 @@ package com.example.android.pets;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -64,8 +64,6 @@ public class CatalogActivity extends AppCompatActivity {
      * the pets database.
      */
     private void displayDatabaseInfo() {
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         String[] projection = {
                 PetEntry._ID,
@@ -75,10 +73,7 @@ public class CatalogActivity extends AppCompatActivity {
                 PetEntry.COLUMN_PET_WEIGHT
         };
 
-        // Performs "SELECT * FROM pets"
-        // to get a Cursor that contains all rows from the pets table.
-        Cursor cursor = db.query(PetEntry.TABLE_NAME,
-                projection, null, null, null, null, null);
+        Cursor cursor = getContentResolver().query(PetEntry.CONTENT_URI, projection, null, null, null);
 
         try {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
@@ -151,9 +146,6 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     private void insertPet() {
-        // Gets the data repository in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
         // Maps values to columns
         ContentValues values = new ContentValues();
         values.put(PetEntry.COLUMN_PET_NAME, "Toto");
@@ -161,9 +153,9 @@ public class CatalogActivity extends AppCompatActivity {
         values.put(PetEntry.COLUMN_PET_GENDER, PetEntry.GENDER_MALE);
         values.put(PetEntry.COLUMN_PET_WEIGHT, 7);
 
-        // Insert the new row, returning the value of the new row
-        long newRowId = db.insert(PetEntry.TABLE_NAME, null, values);
+        // Insert the new row, returning the URI of the new row
+        Uri newRowUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
 
-        Log.i("CatalogActivity", "New row ID" + newRowId);
+        Log.i("CatalogActivity", "New row URI" + newRowUri);
     }
 }
