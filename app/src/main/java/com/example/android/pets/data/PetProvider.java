@@ -151,7 +151,7 @@ public class PetProvider extends ContentProvider {
 
         // Check that the weight is valid
         Integer weight = values.getAsInteger(PetEntry.COLUMN_PET_WEIGHT);
-        if (weight == null || weight < 1) {
+        if (weight == null || weight < 0) {
             throw new IllegalArgumentException("Invalid pet weight");
         }
 
@@ -223,7 +223,7 @@ public class PetProvider extends ContentProvider {
         // check that the weight value is valid.
         if (values.containsKey(PetEntry.COLUMN_PET_WEIGHT)) {
             Integer weight = values.getAsInteger(PetEntry.COLUMN_PET_WEIGHT);
-            if (weight == null || weight < 1) {
+            if (weight == null || weight < 0) {
                 throw new IllegalArgumentException("Invalid pet weight");
             }
         }

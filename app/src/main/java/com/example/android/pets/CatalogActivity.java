@@ -16,6 +16,7 @@
 package com.example.android.pets;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -29,6 +30,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.android.pets.data.PetContract.PetEntry;
@@ -37,7 +39,7 @@ import com.example.android.pets.data.PetContract.PetEntry;
  * Displays list of pets that were entered and stored in the app.
  */
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int PET_LOADER = 0;
+    private static final int PETS_LOADER = 0;
     private PetCursorAdapter petCursorAdapter;
 
     @Override
@@ -55,10 +57,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
-        // Prepare the loader.  Either re-connect with an existing one,
-        // or start a new one.
-        getLoaderManager().initLoader(PET_LOADER, null, this);
-
         // Create an empty adapter we will use to display the loaded data.
         // We pass null for the cursor, then update it in onLoadFinished()
         petCursorAdapter = new PetCursorAdapter(this, null);
@@ -71,6 +69,21 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         listView.setEmptyView(emptyView);
 
         listView.setAdapter(petCursorAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(view.getContext(), EditorActivity.class);
+
+                Uri uri = ContentUris.withAppendedId(PetEntry.CONTENT_URI, id);
+                intent.setData(uri);
+
+                startActivity(intent);
+            }
+        });
+
+        // Prepare the loader.  Either re-connect with an existing one or start a new one.
+        getLoaderManager().initLoader(PETS_LOADER, null, this);
     }
 
 
@@ -136,7 +149,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
         // This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
         // We need to make sure we are no longer using it.
         petCursorAdapter.swapCursor(null);
